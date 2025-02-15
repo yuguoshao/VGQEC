@@ -50,15 +50,18 @@ class Optimizer:
         self.code.set_parameters_rec(para[-num_para_rec:])
         return self.env.state_fidelity(self.code,ave)
 
-    def maximize_optimal_fidelity(self,seed=42,print_flag=True):
-        np.random.seed(seed)
-        init_params=np.random.randn(self.code.num_para)
+    def maximize_optimal_fidelity(self,seed=42,init_params=None,print_flag=True):
+        if init_params is None:
+            np.random.seed(seed)
+            init_params=np.random.randn(self.code.num_para)
         return self.maximize(self.call_optimal_fidelity,init_params,print_flag)
-    def maximize_channel_fidelity(self,seed=42,print_flag=True):
-        np.random.seed(seed)
-        init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
+    def maximize_channel_fidelity(self,seed=42,init_params=None,print_flag=True):
+        if init_params is None:
+            np.random.seed(seed)
+            init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_channel_fidelity,init_params,print_flag)
-    def maximize_state_fidelity(self,seed=42,print_flag=True,ave=False):
-        np.random.seed(seed)
-        init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
+    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True,ave=False):
+        if init_params is None:
+            np.random.seed(seed)
+            init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_state_fidelity,init_params,print_flag)

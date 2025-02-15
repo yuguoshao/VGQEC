@@ -12,3 +12,4 @@ from codebase import CodeBase
 
 from .repetitioncode import RepetitionCode
 from .perfectcode import PerfectCode
+from .no_protection import NoProtection
