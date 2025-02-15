@@ -45,10 +45,13 @@ class EnvBase:
             res+=ele@density_matrix@ele.T.conjugate()
         return res
 
+    def evo_density_set(self,set):
+        return [self.evo_mat(density_matrix) for density_matrix in set]
 
     def evo_vec_set(self,set):
         density_matrix_set=[vec2mat(vec) for vec in set]
-        return [self.evo_mat(density_matrix) for density_matrix in density_matrix_set]
+        return self.evo_density_set(density_matrix_set)
+
 
     def state_fidelity(self,code,ave=False):
         vec_set=code.encoded_train_set()
@@ -56,4 +59,20 @@ class EnvBase:
         decoded_set=[code.decode(ele) for ele in evoed_set]
         res=code.train_set_fidelity(decoded_set,ave)
         return res
+
+    def channel_fidelity(self,code):
+        # Can only handle k=1
+        b00=np.array([[1,0],[0,0]])
+        b01=np.array([[0,1],[0,0]])
+        b10=np.array([[0,0],[1,0]])
+        b11=np.array([[0,0],[0,1]])
+
+        density_set=[code.encode_density_matrix(ele) for ele in [b00,b01,b10,b11]]
+        evoed_set=self.evo_density_set(density_set)
+        decoded_set=[code.decode(ele) for ele in evoed_set]
+        fid=decoded_set[0][0,0]+decoded_set[1][0,1]+decoded_set[2][1,0]+decoded_set[3][1,1]
+        fid=fid/2**2
+        return fid.real
+
+
 
