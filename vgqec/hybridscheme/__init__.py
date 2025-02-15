@@ -15,3 +15,12 @@ from original_code import RepetitionCode, PerfectCode
 
 from .par_three import VGQEC_three_hybrid
 from .par_five import VGQEC_five_hybrid
+
+class HybridScheme(VGQECCode):
+    def __init__(self):
+        super().__init__()
+        self.rec_parameters = None
+
+    def set_parameters_rec(self, para):
+        self.rec_parameters = para
+        self.gen_rec_kraus()
