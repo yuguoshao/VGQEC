@@ -11,7 +11,7 @@ class VGQECCode(CodeBase):
 
     def init_gen(self):
         super().init_gen()
-        self.rec_kraus=self.basecode.rec_kraus
+        #self.rec_kraus=self.basecode.rec_kraus
 
     def encode(self, logical_state):
         super().encode(logical_state)
@@ -23,7 +23,11 @@ class VGQECCode(CodeBase):
     def set_parameters(self,para):
         self.parameters=para
         self.update_encode_mat()
-
+    def decode(self,density_matrix):
+        out=np.zeros((2**self.n,2**self.n),dtype=np.complex128)
+        for ele in self.rec_kraus:
+            out+=ele@density_matrix@ele.T.conjugate()
+        return self.basecode.decode(out)
 
 
     def gen_rec_kraus(self):
