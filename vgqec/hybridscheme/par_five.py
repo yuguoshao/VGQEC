@@ -1,7 +1,7 @@
 import numpy as np
 from . import VGQECCode,PerfectCode
 import qiskit
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector,Operator
 
 class VGQEC_five_hybrid(VGQECCode):
     def __init__(self):
@@ -9,7 +9,7 @@ class VGQEC_five_hybrid(VGQECCode):
         self.n=5
         self.k=1
         self.num_para = 60
-        self.num_para_rec = 60
+        self.num_para_rec = 7+35*3+14
         self.basecode=PerfectCode()
         self.init_gen()
     def update_encode_mat(self):
@@ -177,3 +177,85 @@ class VGQEC_five_hybrid(VGQECCode):
         statevector1 = Statevector.from_instruction(circuit1)
 
         self.encode_mat=np.array([statevector0.data, statevector1.data])
+
+
+    def gen_rec_kraus(self):
+        # self.rec_parameters
+        out=[]
+        par = self.rec_parameters
+        L = 3
+        circuit = qiskit.QuantumCircuit(7)
+        circuit.rz(par[0], 0)
+        circuit.rz(par[1], 1)
+        circuit.rz(par[2], 2)
+        circuit.rz(par[3], 3)
+        circuit.rz(par[4], 4)
+        circuit.rz(par[5], 5)
+        circuit.rz(par[6], 6)
+        for i in range(L):
+            ind=7+20*i
+            circuit.rx(par[ind + 0], 0)
+            circuit.rx(par[ind + 1], 1)
+            circuit.rx(par[ind + 2], 2)
+            circuit.rx(par[ind + 3], 3)
+            circuit.rx(par[ind + 4], 4)
+            circuit.rx(par[ind + 5], 5)
+            circuit.rx(par[ind + 6], 6)
+
+            circuit.rz(par[ind + 7], 0)
+            circuit.rz(par[ind + 8], 1)
+            circuit.rz(par[ind + 9], 2)
+            circuit.rz(par[ind + 10], 3)
+            circuit.rz(par[ind + 11], 4)
+            circuit.rz(par[ind + 12], 5)
+            circuit.rz(par[ind + 13], 6)
+
+
+            circuit.rzz(par[ind + 14], 0, 1)
+            circuit.rzz(par[ind + 15], 0, 2)
+            circuit.rzz(par[ind + 16], 0, 3)
+            circuit.rzz(par[ind + 17], 0, 4)
+            circuit.rzz(par[ind + 18], 0, 5)
+            circuit.rzz(par[ind + 19], 0, 6)
+
+            circuit.rzz(par[ind + 20], 1, 2)
+            circuit.rzz(par[ind + 21], 1, 3)
+            circuit.rzz(par[ind + 22], 1, 4)
+            circuit.rzz(par[ind + 23], 1, 5)
+            circuit.rzz(par[ind + 24], 1, 6)
+
+            circuit.rzz(par[ind + 25], 2, 3)
+            circuit.rzz(par[ind + 26], 2, 4)
+            circuit.rzz(par[ind + 27], 2, 5)
+            circuit.rzz(par[ind + 28], 2, 6)
+            circuit.rzz(par[ind + 29], 3, 4)
+            circuit.rzz(par[ind + 30], 3, 5)
+            circuit.rzz(par[ind + 31], 3, 6)
+            circuit.rzz(par[ind + 32], 4, 5)
+            circuit.rzz(par[ind + 33], 4, 6)
+            circuit.rzz(par[ind + 34], 5, 6)
+
+        ind=7+35*L
+        circuit.rx(par[ind + 0], 0)
+        circuit.rx(par[ind + 1], 1)
+        circuit.rx(par[ind + 2], 2)
+        circuit.rx(par[ind + 3], 3)
+        circuit.rx(par[ind + 4], 4)
+        circuit.rx(par[ind + 5], 5)
+        circuit.rx(par[ind + 6], 6)
+
+        circuit.rz(par[ind + 7], 0)
+        circuit.rz(par[ind + 8], 1)
+        circuit.rz(par[ind + 9], 2)
+        circuit.rz(par[ind + 10], 3)
+        circuit.rz(par[ind + 11], 4)
+        circuit.rz(par[ind + 12], 5)
+        circuit.rz(par[ind + 13], 6)
+
+
+        unitary=Operator(circuit).data[:,:2**self.n]
+        for i in range(2**(5-self.n)):
+            ind=i
+            ele=unitary[ind*2**self.n:(ind+1)*2**self.n]
+            out.append(ele)
+        self.rec_kraus=out
