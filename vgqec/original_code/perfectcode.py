@@ -18,9 +18,7 @@ class PerfectCode(CodeBase):
             [1, 1, 1,-1, 1,1,-1, 1, 1, 1, 1,-1,-1,-1, 1,-1, 1,-1,1, 1, 1,-1,-1,-1,-1, 1,-1,-1, 1,-1,-1,-1]])/np.sqrt(32)
         self.init_gen()
 
-    def encode(self, logical_state):
-        super().encode(logical_state)
-        return np.dot(self.encode_mat.T, logical_state)
+
 
     def gen_rec_kraus(self):
         core=self.encode_mat

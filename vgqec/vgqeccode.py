@@ -13,9 +13,6 @@ class VGQECCode(CodeBase):
         super().init_gen()
         #self.rec_kraus=self.basecode.rec_kraus
 
-    def encode(self, logical_state):
-        super().encode(logical_state)
-        return np.dot(self.encode_mat.T, logical_state)
 
     def update_encode_mat(self):
         raise NotImplementedError('update_encode_mat is not implemented yet')

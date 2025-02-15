@@ -9,9 +9,6 @@ class RepetitionCode(CodeBase):
         self.encode_mat=np.array([[1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1]])
         self.init_gen()
 
-    def encode(self,logical_state):
-        super().encode(logical_state)
-        return np.dot(self.encode_mat.T,logical_state)
 
 
     def gen_rec_kraus(self):

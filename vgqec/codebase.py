@@ -18,9 +18,15 @@ class CodeBase:
     def init_gen(self):
         self.gen_rec_kraus()
         self.get_train_set()
+
     def encode(self,logical_state):
         if 2**self.k!=len(logical_state):
             raise ValueError('logical_state length must be 2^k')
+        return np.dot(self.encode_mat.T, logical_state)
+    def encode_density_matrix(self,density_matrix):
+        if 2**self.k!=density_matrix.shape[0]:
+            raise ValueError('density_matrix size must be 2^k')
+        return np.dot(self.encode_mat.T, density_matrix).dot(self.encode_mat.conjugate())
 
     def decode(self,density_matrix):
         out=np.zeros((2**self.k,2**self.k),dtype=np.complex128)
