@@ -24,7 +24,7 @@ class RepetitionCode(CodeBase):
                 kraus[n - 1][i] = 1
                 kraus[0][n - i - 1] = 1
             krauses.append(kraus)
-        return krauses
+        self.rec_kraus= krauses
 
 class RepetitionCodeFive(CodeBase):
     def __init__(self):

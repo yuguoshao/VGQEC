@@ -13,4 +13,4 @@ class NoProtection(CodeBase):
 
     def gen_rec_kraus(self):
         krauses = [np.array([[1,0],[0,1]])]
-        return krauses
+        self.rec_kraus= krauses

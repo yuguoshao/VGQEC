@@ -4,7 +4,9 @@ from vgqec.environment import ThermalRelaxationNoise,ThermalRelaxationNoiseQ0
 from vgqec import Optimizer
 import numpy as np
 import matplotlib.pyplot as plt
+from fig4b_data import data
 
+RUN=False
 mission_list=[0,2,4,6,8,10]
 OPT=[1,0.9956016516481846,0.9892200438066916,0.9811999068060324,0.971770282439932,0.9611676486415699]
 
@@ -13,16 +15,19 @@ if __name__ == '__main__':
     code0=VGQEC_five_hybrid()
     code1=PerfectCode()
     code2=NoProtection()
-    APD_Five=[]
-    APD_OFive=[]
-    Q0=[]
+    APD_Five=[1]
+    APD_OFive=[1]
+    Q0=[1]
     random_seeds = np.random.randint(0, 2 ** 32 - 1, size=num_seeds)
-    for t in mission_list:
+    for t in mission_list[1:]:
         env = ThermalRelaxationNoise(t)
         opt = Optimizer(code0, env)
-        temp=[opt.maximize_state_fidelity(seed=seed) for seed in random_seeds]
-        max_first_item_tuple = max(temp, key=lambda x: x[0])
-        APD_Five.append(opt.call_channel_fidelity(max_first_item_tuple[1]))
+        if RUN:
+            temp=[opt.maximize_state_fidelity(seed=seed) for seed in random_seeds]
+            max_first_item_tuple = max(temp, key=lambda x: x[0])
+            APD_Five.append(opt.call_channel_fidelity(max_first_item_tuple[1]))
+        else:
+            APD_Five.append(opt.call_channel_fidelity(data[t//2-1][2]))
         APD_OFive.append(env.channel_fidelity(code1))
 
         env1 = ThermalRelaxationNoiseQ0(t)

@@ -1,9 +1,9 @@
 import numpy as np
-from . import VGQECCode,PerfectCode
+from . import HybridScheme,PerfectCode
 import qiskit
 from qiskit.quantum_info import Statevector,Operator
 
-class VGQEC_five_hybrid(VGQECCode):
+class VGQEC_five_hybrid(HybridScheme):
     def __init__(self):
         super().__init__()
         self.n=5
