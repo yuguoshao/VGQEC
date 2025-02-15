@@ -27,7 +27,10 @@ class PerfectCode(CodeBase):
         for i in range(15):
             indexs=i//3
             type=i%3+1
-            temp=pauli_dict[type]
+            if indexs ==0:
+                temp=pauli_dict[type]
+            else:
+                temp=I
             for j in range(1,5):
                 if j==indexs:
                     temp=np.kron(temp,pauli_dict[type])
