@@ -9,6 +9,10 @@ class VGQECCode(CodeBase):
         self.encode_mat=None
         self.parameters=None
 
+    def init_gen(self):
+        super().init_gen()
+        self.rec_kraus=self.basecode.rec_kraus
+
     def encode(self, logical_state):
         super().encode(logical_state)
         return np.dot(self.encode_mat.T, logical_state)
@@ -20,9 +24,7 @@ class VGQECCode(CodeBase):
         self.parameters=para
         self.update_encode_mat()
 
-    @property
-    def rec_kraus(self):
-        return self.basecode.rec_kraus
+
 
     def gen_rec_kraus(self):
         pass

@@ -11,7 +11,7 @@ class CodeBase:
     def __init__(self):
         self.k = None
         self.n = None
-        #self.rec_kraus = None
+        self.rec_kraus = None
         self.train_set = None
 
 
