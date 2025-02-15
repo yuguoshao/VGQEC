@@ -8,6 +8,8 @@ class VGQEC_five_hybrid(VGQECCode):
         super().__init__()
         self.n=5
         self.k=1
+        self.num_para = 60
+        self.num_para_rec = 60
         self.basecode=PerfectCode()
         self.init_gen()
     def update_encode_mat(self):

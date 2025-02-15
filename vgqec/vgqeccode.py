@@ -7,6 +7,7 @@ class VGQECCode(CodeBase):
         super().__init__()
         self.basecode=None
         self.parameters=None
+        self.num_para=None
 
     def init_gen(self):
         super().init_gen()

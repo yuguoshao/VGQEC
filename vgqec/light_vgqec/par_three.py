@@ -6,6 +6,7 @@ class VGQEC_three_light(VGQECCode):
         super().__init__()
         self.n=3
         self.k=1
+        self.num_para=1
         self.basecode=RepetitionCode()
         self.init_gen()
     def update_encode_mat(self):

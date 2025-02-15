@@ -8,6 +8,8 @@ class VGQEC_three_hybrid(HybridScheme):
         super().__init__()
         self.n=3
         self.k=1
+        self.num_para = 21
+        self.num_para_rec = 5+20*3+10
         self.basecode=RepetitionCode()
         self.init_gen()
     def update_encode_mat(self):

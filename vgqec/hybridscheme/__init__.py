@@ -18,6 +18,7 @@ class HybridScheme(VGQECCode):
     def __init__(self):
         super().__init__()
         self.rec_parameters = None
+        self.num_para_rec = None
 
     def set_parameters_rec(self, para):
         self.rec_parameters = para

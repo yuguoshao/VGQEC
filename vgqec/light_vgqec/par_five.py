@@ -8,6 +8,7 @@ class VGQEC_five_light(VGQECCode):
         super().__init__()
         self.n=5
         self.k=1
+        self.num_para = 5
         self.basecode=PerfectCode()
         self.init_gen()
     def update_encode_mat(self):
