@@ -28,3 +28,22 @@ class ThermalRelaxationNoise(EnvBase):
 
         kraus_operators = qiskit.quantum_info.Kraus(circuit).data
         self.noise_kraus=kraus_operators
+
+
+class ThermalRelaxationNoiseQ0(EnvBase):
+    def __init__(self,t=4):
+        super().__init__()
+        self.n=1
+        self.t=t
+        self.set_noise()
+
+    def set_noise(self):
+        t=self.t
+        error1 = noise_aer.thermal_relaxation_error(97.51, 178.3, t)
+
+        circuit = qiskit.QuantumCircuit(self.n)
+
+        circuit.append(error1, [0])
+
+        kraus_operators = qiskit.quantum_info.Kraus(circuit).data
+        self.noise_kraus=kraus_operators
