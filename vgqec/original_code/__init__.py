@@ -10,6 +10,6 @@ sys.path.append(parent_dir)
 # Import the codebase module
 from codebase import CodeBase
 
-from .repetitioncode import RepetitionCode
+from .repetitioncode import RepetitionCode,RepetitionCodeFive
 from .perfectcode import PerfectCode
 from .no_protection import NoProtection
