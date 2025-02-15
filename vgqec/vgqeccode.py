@@ -6,7 +6,6 @@ class VGQECCode(CodeBase):
     def __init__(self):
         super().__init__()
         self.basecode=None
-        self.encode_mat=None
         self.parameters=None
 
     def init_gen(self):

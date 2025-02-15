@@ -3,11 +3,12 @@ from qiskit_aer import noise as noise_aer
 import qiskit
 import numpy as np
 
-class CorrelatedNoise(EnvBase):
+class ThermalRelaxationNoise(EnvBase):
     def __init__(self,t=4):
         super().__init__()
         self.n=5
         self.t=t
+        self.set_noise()
 
     def set_noise(self):
         t=self.t

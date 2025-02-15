@@ -7,6 +7,7 @@ class AmplitudeDamping(EnvBase):
         super().__init__()
         self.n=n
         self.lam=lam
+        self.set_noise()
 
     def set_noise(self):
         circuit = qiskit.QuantumCircuit(self.n)

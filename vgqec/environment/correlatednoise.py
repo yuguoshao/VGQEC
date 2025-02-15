@@ -8,7 +8,7 @@ class CorrelatedNoise(EnvBase):
         super().__init__()
         self.n=5
         self.eta=eta
-
+        self.set_noise()
     def set_noise(self):
         lam=0.002
         eta=self.eta

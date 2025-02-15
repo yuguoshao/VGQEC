@@ -13,10 +13,11 @@ class CodeBase:
         self.n = None
         self.rec_kraus = None
         self.train_set = None
+        self.encode_mat = None
 
 
     def init_gen(self):
-        self.gen_rec_kraus()
+        #self.gen_rec_kraus()
         self.get_train_set()
 
     def encode(self,logical_state):

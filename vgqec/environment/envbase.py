@@ -40,7 +40,7 @@ class EnvBase:
         return prob.value/2**(2*k)
 
     def evo_mat(self,density_matrix):
-        res=np.zeros_like(density_matrix)
+        res=np.zeros_like(density_matrix,dtype=np.complex128)
         for ele in self.noise_kraus:
             res+=ele@density_matrix@ele.T.conjugate()
         return res

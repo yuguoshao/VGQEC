@@ -8,7 +8,7 @@ class RepetitionCode(CodeBase):
         self.k=1
         self.encode_mat=np.array([[1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1]])
         self.init_gen()
-
+        self.gen_rec_kraus()
 
 
     def gen_rec_kraus(self):
