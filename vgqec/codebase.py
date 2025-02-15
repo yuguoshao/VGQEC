@@ -23,7 +23,7 @@ class CodeBase:
             raise ValueError('logical_state length must be 2^k')
 
     def decode(self,density_matrix):
-        out=np.zeros_like(density_matrix)
+        out=np.zeros((2**self.k,2**self.k),dtype=np.complex128)
         for ele in self.rec_kraus:
             out+=ele@density_matrix@ele.T.conjugate()
         return out
