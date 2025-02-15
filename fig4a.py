@@ -44,10 +44,8 @@ if __name__ == '__main__':
     fig, main_ax = plt.subplots()
     main_ax.plot(np.arange(0, 0.5, 0.05), AD_MOD_Five, label='Five-qubit VGQEC code', color='blue', marker='o',
                  zorder=6)
-
     main_ax.plot(np.arange(0, 0.5, 0.05), AD_MOD_Three, label='Three-qubit VGQEC code', color='orange', marker='o',
                  zorder=5)
-
     main_ax.plot(np.arange(0, 0.5, 0.05), npAD_Five, label='[[5,1,3]] code', linestyle='--', color='blue',
                  marker='.', zorder=4)
     main_ax.plot(np.arange(0, 0.5, 0.05), npAD_Three, label='Three-qubit repetition code', linestyle='--',
@@ -57,7 +55,6 @@ if __name__ == '__main__':
     main_ax.plot(np.arange(0, 0.5, 0.05), no_protection, color='red', linewidth=1.0, linestyle='--',
                  label='No Protection', zorder=1)
     main_ax.grid(linestyle=":", color="black")
-
     main_ax.legend(loc='lower left')
     main_ax.set_ylim((0.74, 1.01))
     main_ax.set_xlabel(r'$\lambda$')

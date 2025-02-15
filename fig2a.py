@@ -43,7 +43,6 @@ if __name__ == '__main__':
     right_inset_ax.set(xticks=[0, 5, 10])
     right_inset_ax.grid(linestyle=":", color="black")
     right_inset_ax.set_xlabel('Steps')
-
     main_ax.grid(linestyle=":", color="black")
     main_ax.legend(loc='lower left')
     main_ax.set_ylim((0.74, 1.01))
