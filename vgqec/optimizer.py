@@ -43,7 +43,7 @@ class Optimizer:
         self.code.set_parameters_rec(para[-num_para_rec:])
         return self.env.channel_fidelity(self.code)
 
-    def call_state_fidelity(self,para,ave=False):
+    def call_state_fidelity(self,para,ave=True):
         num_para = self.code.num_para
         num_para_rec = self.code.num_para_rec
         self.code.set_parameters(para[:num_para])
