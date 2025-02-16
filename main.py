@@ -20,3 +20,7 @@ print(code2.basecode.check_kraus())
 code3=vgqec.hybridscheme.VGQEC_three_hybrid()
 ad_env=vgqec.environment.AmplitudeDamping(1,0.05)
 ad_env.channel_fidelity(code0)
+
+ad_env=vgqec.environment.AmplitudeDamping(3,0.05)
+opt1=vgqec.Optimizer(code1,ad_env)
+opt1.maximize_optimal_fidelity()

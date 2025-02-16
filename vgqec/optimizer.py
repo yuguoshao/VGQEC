@@ -53,15 +53,15 @@ class Optimizer:
     def maximize_optimal_fidelity(self,seed=42,init_params=None,print_flag=True):
         if init_params is None:
             np.random.seed(seed)
-            init_params=np.random.randn(self.code.num_para)
+            init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para)
         return self.maximize(self.call_optimal_fidelity,init_params,print_flag)
     def maximize_channel_fidelity(self,seed=42,init_params=None,print_flag=True):
         if init_params is None:
             np.random.seed(seed)
-            init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
+            init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_channel_fidelity,init_params,print_flag)
     def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True,ave=False):
         if init_params is None:
             np.random.seed(seed)
-            init_params=np.random.randn(self.code.num_para+self.code.num_para_rec)
+            init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_state_fidelity,init_params,print_flag)
