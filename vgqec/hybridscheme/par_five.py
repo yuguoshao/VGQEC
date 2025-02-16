@@ -236,7 +236,7 @@ class VGQEC_five_hybrid(HybridScheme):
 
 
         unitary=Operator(circuit).data[:,:2**self.n]
-        for i in range(2**(5-self.n)):
+        for i in range(2**(7-self.n)):
             ind=i
             ele=unitary[ind*2**self.n:(ind+1)*2**self.n]
             out.append(ele)
