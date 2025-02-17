@@ -4,7 +4,7 @@ import numpy as np
 def vec_matrix_fidelity(vec,matrix):
     #F(\rho_1, \rho_2) = Tr[\sqrt{\sqrt{\rho_1}\rho_2\sqrt{\rho_1}}]^2.
     innerproduct=np.dot(np.dot(vec.conjugate().reshape((1, len(vec))), matrix), vec)
-    return innerproduct
+    return innerproduct.real
 
 
 class CodeBase:
