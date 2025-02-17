@@ -60,7 +60,7 @@ class Optimizer:
             np.random.seed(seed)
             init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_channel_fidelity,init_params,print_flag)
-    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True,ave=False):
+    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True):
         if init_params is None:
             np.random.seed(seed)
             init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
