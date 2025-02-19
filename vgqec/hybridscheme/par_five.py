@@ -132,8 +132,8 @@ class VGQEC_five_hybrid(HybridScheme):
             circuit.rz(par[ind + 12], 5)
             circuit.rz(par[ind + 13], 6)
 
-            for (j,k) in enumerate(itertools.combinations(range(7),2)):
-                circuit.rzz(par[ind + 14+j], k[0], k[1])
+            for (i,j) in enumerate(itertools.combinations(range(7),2)):
+                circuit.rzz(par[ind + 14+i], j[0], j[1])
 
         ind=7+35*L
         circuit.rx(par[ind + 0], 0)
