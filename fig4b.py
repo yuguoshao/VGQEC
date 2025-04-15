@@ -4,7 +4,7 @@ from vgqec.environment import ThermalRelaxationNoise,ThermalRelaxationNoiseQ0
 from vgqec import Optimizer
 import numpy as np
 import matplotlib.pyplot as plt
-from fig4b_data import data
+from fig4b_data import data,seeds
 
 RUN=False
 mission_list=[0,2,4,6,8,10]
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     APD_Five=[1]
     APD_OFive=[1]
     Q0=[1]
-    random_seeds = np.random.randint(0, 2 ** 32 - 1, size=num_seeds)
+    random_seeds = seeds
     for t in mission_list[1:]:
         env = ThermalRelaxationNoise(t)
         opt = Optimizer(code0, env)
