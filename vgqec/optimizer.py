@@ -29,7 +29,9 @@ class Optimizer:
     def maximize(self, func,init_params,print_flag=True):
         _func=lambda x: -1*func(x)
         call_back = call_back_class(print_flag)
-        mini_result=scipy.optimize.minimize(_func, init_params, callback=call_back,method='l-bfgs-b')
+        mini_result = scipy.optimize.minimize(_func, init_params, callback=call_back, method='l-bfgs-b',
+                                              options={'eps': 1e-08, 'maxfun': 500000, 'maxiter': 30000,
+                                                       'ftol': 2.220446049250313e-15, 'iprint': -1})
         return -1 * mini_result.fun, mini_result.x
 
     def call_optimal_fidelity(self,para):
@@ -60,8 +62,8 @@ class Optimizer:
             np.random.seed(seed)
             init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
         return self.maximize(self.call_channel_fidelity,init_params,print_flag)
-    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True):
+    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=False):
         if init_params is None:
             np.random.seed(seed)
-            init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
+            init_params = np.random.randn(self.code.num_para + self.code.num_para_rec) * np.pi
         return self.maximize(self.call_state_fidelity,init_params,print_flag)
