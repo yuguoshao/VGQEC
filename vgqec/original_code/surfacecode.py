@@ -1,6 +1,12 @@
 import numpy as np
-from . import CodeBase
-
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+#加入父目录到路径中
+import sys
+sys.path.append(os.path.dirname(dir_path))
+#from . import CodeBase
+from codebase import CodeBase
+import pymatching
 
 N_PHYS = 9  # data qubits
 N_TOTAL = 10  # data(0..8) + reference(9)
@@ -13,15 +19,15 @@ def pstr_from_ops(ops, n=N_PHYS):
 
 # 4 个 X-check + 4 个 Z-check（示例：全部 weight-4）
 STABILIZERS_X = [
-    pstr_from_ops({0:"X", 1:"X", 3:"X", 4:"X"}),
+    pstr_from_ops({0:"X", 1:"X"}),
     pstr_from_ops({1:"X", 2:"X", 4:"X", 5:"X"}),
     pstr_from_ops({3:"X", 4:"X", 6:"X", 7:"X"}),
-    pstr_from_ops({4:"X", 5:"X", 7:"X", 8:"X"}),
+    pstr_from_ops({7:"X", 8:"X"}),
 ]
 STABILIZERS_Z = [
     pstr_from_ops({0:"Z", 1:"Z", 3:"Z", 4:"Z"}),
-    pstr_from_ops({1:"Z", 2:"Z", 4:"Z", 5:"Z"}),
-    pstr_from_ops({3:"Z", 4:"Z", 6:"Z", 7:"Z"}),
+    pstr_from_ops({2:"Z", 5:"Z"}),
+    pstr_from_ops({3:"Z", 6:"Z"}),
     pstr_from_ops({4:"Z", 5:"Z", 7:"Z", 8:"Z"}),
 ]
 STABILIZERS = STABILIZERS_X + STABILIZERS_Z  # 8 个
@@ -117,47 +123,78 @@ def make_logical_basis():
 
 
 
-# ============================================================
-# 3) pure-error 生成元：对每个 stabilizer 找一个 Pauli E_i
-#    满足：只与该 stabilizer 反对易，其它对易（weight<=2 搜索）
-# ============================================================
+def build_check_matrices(Sx_pstrs, Sz_pstrs, n):
+    mX = len(Sx_pstrs)
+    mZ = len(Sz_pstrs)
+    H_Z = np.zeros((mX, n), dtype=np.uint8)  # for decoding Z errors
+    H_X = np.zeros((mZ, n), dtype=np.uint8)  # for decoding X errors
 
-STAB_MASKS = [pauli_to_masks(s) for s in STABILIZERS]
+    # Z on qubit q anticommutes with X/Y on that qubit
+    for i, sx in enumerate(Sx_pstrs):
+        for q in range(n):
+            ch = sx[q]
+            if ch in ("X", "Y"):
+                H_Z[i, q] ^= 1
 
-def find_pure_error_for(i, max_weight=2):
-    target = [0]*len(STAB_MASKS)
-    target[i] = 1
+    # X on qubit q anticommutes with Z/Y on that qubit
+    for i, sz in enumerate(Sz_pstrs):
+        for q in range(n):
+            ch = sz[q]
+            if ch in ("Z", "Y"):
+                H_X[i, q] ^= 1
 
-    # weight-1
-    for q in range(N_PHYS):
-        for op in ["X","Y","Z"]:
-            p = pstr_from_ops({q: op})
-            pm = pauli_to_masks(p)
-            comm = [int(symplectic_anticommutes(pm, sm)) for sm in STAB_MASKS]
-            if comm == target:
-                return p
+    return H_Z, H_X
 
-    # weight-2
-    if max_weight >= 2:
-        for q1 in range(N_PHYS):
-            for q2 in range(q1+1, N_PHYS):
-                for op1 in ["X","Y","Z"]:
-                    for op2 in ["X","Y","Z"]:
-                        p = pstr_from_ops({q1: op1, q2: op2})
-                        pm = pauli_to_masks(p)
-                        comm = [int(symplectic_anticommutes(pm, sm)) for sm in STAB_MASKS]
-                        if comm == target:
-                            return p
+def build_kraus_with_pymatching_mw(Sx_pstrs, Sz_pstrs, U):
+    n = len(Sx_pstrs[0])
+    stabs = list(Sx_pstrs) + list(Sz_pstrs)
+    m = len(stabs)
+    #U     # 2x512
 
-    raise RuntimeError(f"Cannot find pure error for stabilizer {i} within weight<= {max_weight}")
+    # ---- PyMatching decoders from check matrices ----
+    H_Z, H_X = build_check_matrices(Sx_pstrs, Sz_pstrs, n)
 
-PURE_ERRORS = [find_pure_error_for(i, max_weight=2) for i in range(len(STABILIZERS))]
-PURE_PRECOMP = []
-for pe in PURE_ERRORS:
-    xmask, zmask, ny = pauli_to_masks(pe)
-    src, phase = precompute_perm_phase(xmask, zmask, ny)
-    PURE_PRECOMP.append((src, phase))
+    # Uniform weights => MW by number of qubits (ties arbitrary but still MW).
+    # Matching can be built from a check matrix directly. :contentReference[oaicite:4]{index=4}
+    decZ = pymatching.Matching(H_Z)  # decode Z errors using X syndromes
+    decX = pymatching.Matching(H_X)  # decode X errors using Z syndromes
 
+    Ks = []
+    for syn_int in range(1 << m):
+        # split syndrome bits
+        synX = np.array([(syn_int >> i) & 1 for i in range(len(Sx_pstrs))], dtype=np.uint8)
+        synZ = np.array([(syn_int >> (len(Sx_pstrs) + i)) & 1 for i in range(len(Sz_pstrs))], dtype=np.uint8)
+
+        # MWPM corrections (bitvector over data qubits)
+        z_corr = decZ.decode(synX)  # length n, 1 means apply Z on that qubit  :contentReference[oaicite:5]{index=5}
+        x_corr = decX.decode(synZ)  # length n, 1 means apply X on that qubit
+
+        # build correction Pauli masks
+        xmask = 0
+        zmask = 0
+        for q in range(n):
+            if int(x_corr[q]):
+                xmask |= (1 << q)
+            if int(z_corr[q]):
+                zmask |= (1 << q)
+        ny = (xmask & zmask).bit_count()
+        C_pre = precompute_perm_phase(xmask, zmask, ny, n=n)
+        src, phase = C_pre
+        # K_s = U^† C_s Π_s:
+        # build it by acting on |0_L>,|1_L> (avoid 512x512 projector)
+        w0 = apply_pauli_to_statevec(U[0], src, phase)
+        w1 = apply_pauli_to_statevec(U[1], src, phase)
+        K = np.stack([w0.conj(), w1.conj()], axis=0)  # (2,512)
+        Ks.append(K)
+
+    # sanity: completeness Σ K†K = I
+    M = np.zeros((1 << n, 1 << n), dtype=np.complex128)
+    for K in Ks:
+        M += K.conj().T @ K
+    #print("[check] max |Σ K†K - I| =", np.max(np.abs(M - np.eye(1 << n))))
+    assert np.allclose(M, np.eye(1 << n))
+
+    return Ks
 
 
 class SurfaceCode9(CodeBase):
@@ -171,20 +208,13 @@ class SurfaceCode9(CodeBase):
 
 
     def gen_rec_kraus(self):
-        num=3
-        n = 2 ** num
-        krauses = []
-        for i in range(int(n / 2)):
-            kraus = np.zeros([n, n])
-            if bin(i).count('1') < num / 2:
-                kraus[0][i] = 1
-                kraus[n - 1][n - i - 1] = 1
-            else:
-                kraus[n - 1][i] = 1
-                kraus[0][n - i - 1] = 1
-            krauses.append(kraus)
+        krauses = build_kraus_with_pymatching_mw(STABILIZERS_X, STABILIZERS_Z, self.encode_mat)
         self.rec_kraus= krauses
 
     def encode_mat_fun(self):
-        res = np.array([make_logical_basis])
+        res = np.array(make_logical_basis())
         return res
+
+if __name__ == '__main__':
+    code = SurfaceCode9()
+    print(code.encode_mat)
