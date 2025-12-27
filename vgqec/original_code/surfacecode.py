@@ -1,11 +1,5 @@
 import numpy as np
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-#加入父目录到路径中
-import sys
-sys.path.append(os.path.dirname(dir_path))
-#from . import CodeBase
-from codebase import CodeBase
+from . import CodeBase
 import pymatching
 
 N_PHYS = 9  # data qubits
@@ -216,5 +210,13 @@ class SurfaceCode9(CodeBase):
         return res
 
 if __name__ == '__main__':
+    import os
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    # 加入父目录到路径中
+    import sys
+
+    sys.path.append(os.path.dirname(dir_path))
+    from codebase import CodeBase
     code = SurfaceCode9()
     print(code.encode_mat)
