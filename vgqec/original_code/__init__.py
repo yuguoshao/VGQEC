@@ -13,3 +13,4 @@ from codebase import CodeBase
 from .repetitioncode import RepetitionCode,RepetitionCodeFive
 from .perfectcode import PerfectCode
 from .no_protection import NoProtection
+from .surfacecode import SurfaceCode9

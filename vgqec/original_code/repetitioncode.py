@@ -23,6 +23,7 @@ class RepetitionCode(CodeBase):
             else:
                 kraus[n - 1][i] = 1
                 kraus[0][n - i - 1] = 1
+            kraus = self.encode_mat @ kraus
             krauses.append(kraus)
         self.rec_kraus= krauses
 

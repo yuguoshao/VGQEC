@@ -1,5 +1,5 @@
 from vgqec.hybridscheme import VGQEC_three_hybrid,VGQEC_five_hybrid
-from vgqec.original_code import RepetitionCode,NoProtection,PerfectCode
+from vgqec.original_code import RepetitionCode,NoProtection,PerfectCode,SurfaceCode9
 from vgqec.environment import AmplitudeDamping
 from vgqec import Optimizer
 import numpy as np
@@ -14,12 +14,14 @@ if __name__ == '__main__':
     code2=PerfectCode()
     code3=RepetitionCode()
     code4=NoProtection()
+    code5=SurfaceCode9()
     lam=np.arange(0,0.5,0.05)
     AD_MOD_Five=[]
     AD_MOD_Three=[]
     npAD_Five=[]
     npAD_Three=[]
     no_protection=[]
+    surface_code_MWPM=[]
     random_seeds = np.random.randint(0, 2 ** 32 - 1, size=num_seeds)
     for ele in lam:
         env5 = AmplitudeDamping(5,ele)
@@ -39,6 +41,9 @@ if __name__ == '__main__':
         ad_env = AmplitudeDamping(1,ele)
         no_protection.append(ad_env.channel_fidelity(code4))
 
+        env9 = AmplitudeDamping(9,ele)
+        surface_code_MWPM.append(env9.channel_fidelity(code5))
+
 
     fig, main_ax = plt.subplots()
     main_ax.plot(np.arange(0, 0.5, 0.05), AD_MOD_Five, label='Five-qubit VGQEC code', color='blue', marker='o',
@@ -49,6 +54,8 @@ if __name__ == '__main__':
                  marker='.', zorder=4)
     main_ax.plot(np.arange(0, 0.5, 0.05), npAD_Three, label='Three-qubit repetition code', linestyle='--',
                  color='orange', marker='.', zorder=3)
+    main_ax.plot(np.arange(0, 0.5, 0.05), surface_code_MWPM, label='surface code (d=3)', linestyle='--',
+                 color='purple', marker='.', zorder=2)
     main_ax.plot(np.arange(0, 0.5, 0.05), ad_SDP_opt, label='Fig. 2 (optimal channel fidelity)', linestyle='--',
                  color='green', zorder=5)
     main_ax.plot(np.arange(0, 0.5, 0.05), no_protection, color='red', linewidth=1.0, linestyle='--',
