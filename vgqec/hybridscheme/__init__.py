@@ -11,7 +11,7 @@ sys.path.append(parent_dir)
 from codebase import CodeBase
 from vgqeccode import VGQECCode
 
-from original_code import RepetitionCode, PerfectCode
+from original_code import RepetitionCode, PerfectCode, SurfaceCode9
 
 
 class HybridScheme(VGQECCode):
