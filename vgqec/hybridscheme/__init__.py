@@ -26,3 +26,4 @@ class HybridScheme(VGQECCode):
 
 from .par_three import VGQEC_three_hybrid
 from .par_five import VGQEC_five_hybrid
+from .par_nine import VGQEC_nine_hybrid
