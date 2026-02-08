@@ -9,7 +9,7 @@ class VGQEC_nine_hybrid(HybridScheme):
         self.n=9
         self.k=1
         self.num_para = 171
-        self.num_para_rec = 11+(36+22)*3 +22
+        self.num_para_rec = 11+(55+22)*3 +22
         self.basecode=SurfaceCode9()
         self.init_gen()
     def update_encode_mat(self):
@@ -246,7 +246,7 @@ class VGQEC_nine_hybrid(HybridScheme):
         circuit.rz(par[9], 9)
         circuit.rz(par[10], 10)
         for i in range(L):
-            ind=11+(36+22)*i
+            ind=11+(55+22)*i
             circuit.rx(par[ind + 0], 0)
             circuit.rx(par[ind + 1], 1)
             circuit.rx(par[ind + 2], 2)
@@ -271,10 +271,10 @@ class VGQEC_nine_hybrid(HybridScheme):
             circuit.rz(par[ind + 20], 9)
             circuit.rz(par[ind + 21], 10)
 
-            for (i,j) in enumerate(itertools.combinations(range(9),2)):
+            for (i,j) in enumerate(itertools.combinations(range(11),2)):
                 circuit.rzz(par[ind + 22+i], j[0], j[1])
 
-        ind=11+(36+22)*L
+        ind=11+(55+22)*L
         circuit.rx(par[ind + 0], 0)
         circuit.rx(par[ind + 1], 1)
         circuit.rx(par[ind + 2], 2)
