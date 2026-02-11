@@ -6,7 +6,7 @@ import pennylane.numpy as np
 def vec_matrix_fidelity(vec,matrix):
     #F(\rho_1, \rho_2) = Tr[\sqrt{\sqrt{\rho_1}\rho_2\sqrt{\rho_1}}]^2.
     innerproduct=np.dot(np.dot(vec.conjugate().reshape((1, len(vec))), matrix), vec)
-    return innerproduct.real
+    return np.real(innerproduct)
 
 
 class VGQEC_nine_hybrid(HybridScheme):
@@ -333,7 +333,7 @@ class VGQEC_nine_hybrid(HybridScheme):
     def decode(self,density_matrix):
         out=np.zeros((2**self.n,2**self.n),dtype=np.complex128)
         for ele in self.rec_kraus:
-            out+=ele@density_matrix@ele.T.conjugate()
+            out+=ele@density_matrix@np.conjugate(ele.T)
         return self.base_decode(out)
 
     def base_decode(self,density_matrix):
