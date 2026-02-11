@@ -89,11 +89,14 @@ class Optimizer_qml(Optimizer):
         return self.maximize(self.call_channel_fidelity, par,print_flag)
 
     def maximize(self, func,init_params,print_flag=True):
-        _func=lambda x: -1*func(x)
+        def _func(x):
+            x = qml.numpy.array(x, requires_grad=True)
+            f = -1*func(x)
+            return f
         def _jac(x):
             x = qml.numpy.array(x, requires_grad=True)
             g = _func(x)
-            return np.array(g, dtype=float)
+            return g
         call_back = call_back_class(print_flag)
         mini_result = scipy.optimize.minimize(_func, init_params, jac=_jac, callback=call_back, method='l-bfgs-b',
                                               options={'eps': 1e-08, 'maxfun': 500000, 'maxiter': 30000,
