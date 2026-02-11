@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+import pennylane as qml
 
 class call_back_class:
     def __init__(self,print_flag):
@@ -67,3 +68,34 @@ class Optimizer:
             np.random.seed(seed)
             init_params = np.random.randn(self.code.num_para + self.code.num_para_rec) * np.pi
         return self.maximize(self.call_state_fidelity,init_params,print_flag)
+
+
+class Optimizer_qml(Optimizer):
+    def __init__(self, code, env):
+        super().__init__(code, env)
+
+    def maximize_state_fidelity(self,seed=42,init_params=None,print_flag=True):
+        if init_params is None:
+            np.random.seed(seed)
+            init_params = np.random.randn(self.code.num_para + self.code.num_para_rec) * np.pi
+        par = qml.numpy.array(init_params, requires_grad=True)
+        return self.maximize(self.call_state_fidelity,par,print_flag)
+
+    def maximize_channel_fidelity(self,seed=42,init_params=None,print_flag=True):
+        if init_params is None:
+            np.random.seed(seed)
+            init_params=np.random.uniform(low=0.0, high=2*np.pi,size=self.code.num_para+self.code.num_para_rec)
+        par = qml.numpy.array(init_params, requires_grad=True)
+        return self.maximize(self.call_channel_fidelity, par,print_flag)
+
+    def maximize(self, func,init_params,print_flag=True):
+        _func=lambda x: -1*func(x)
+        def _jac(x):
+            x = qml.numpy.array(x, requires_grad=True)
+            g = _func(x)
+            return np.array(g, dtype=float)
+        call_back = call_back_class(print_flag)
+        mini_result = scipy.optimize.minimize(_func, init_params, jac=_jac, callback=call_back, method='l-bfgs-b',
+                                              options={'eps': 1e-08, 'maxfun': 500000, 'maxiter': 30000,
+                                                       'ftol': 2.220446049250313e-15, 'iprint': -1})
+        return -1 * mini_result.fun, mini_result.x
