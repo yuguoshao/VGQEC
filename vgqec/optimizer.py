@@ -90,12 +90,13 @@ class Optimizer_qml(Optimizer):
 
     def maximize(self, func,init_params,print_flag=True):
         def _func(x):
-            x = qml.numpy.array(x, requires_grad=True)
+            x = qml.numpy.array(x, requires_grad=False)
             f = -1*func(x)
-            return f
+            return f[0]
         def _jac(x):
             x = qml.numpy.array(x, requires_grad=True)
-            g = _func(x)
+            f = lambda x: -1*func(x)[0]
+            g = qml.grad(f)(x)
             return g
         call_back = call_back_class(print_flag)
         mini_result = scipy.optimize.minimize(_func, init_params, jac=_jac, callback=call_back, method='l-bfgs-b',
