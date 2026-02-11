@@ -16,7 +16,7 @@ def amp_damp_single_kraus(lam: float):
 
 def vec2mat(vec):
     # state vector to density matrix
-    return qml.numpy.outer(vec, vec.conj())
+    return qml.numpy.outer(vec, qml.numpy.conjugate(vec))
 
 class AmplitudeDamping(EnvBase):
     def __init__(self,n,lam=0.1):
