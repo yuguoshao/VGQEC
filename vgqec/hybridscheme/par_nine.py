@@ -1,8 +1,13 @@
-import numpy as np
 import pennylane as qml
 from . import HybridScheme, SurfaceCode9
-import qiskit,itertools, torch
-from qiskit.quantum_info import Statevector,Operator
+import itertools
+import pennylane.numpy as np
+
+def vec_matrix_fidelity(vec,matrix):
+    #F(\rho_1, \rho_2) = Tr[\sqrt{\sqrt{\rho_1}\rho_2\sqrt{\rho_1}}]^2.
+    innerproduct=np.dot(np.dot(vec.conjugate().reshape((1, len(vec))), matrix), vec)
+    return innerproduct.real
+
 
 class VGQEC_nine_hybrid(HybridScheme):
     def __init__(self):
@@ -237,77 +242,114 @@ class VGQEC_nine_hybrid(HybridScheme):
         out=[]
         par = self.rec_parameters
         L = 3
-        circuit = qiskit.QuantumCircuit(11)
-        circuit.rz(par[0], 0)
-        circuit.rz(par[1], 1)
-        circuit.rz(par[2], 2)
-        circuit.rz(par[3], 3)
-        circuit.rz(par[4], 4)
-        circuit.rz(par[5], 5)
-        circuit.rz(par[6], 6)
-        circuit.rz(par[7], 7)
-        circuit.rz(par[8], 8)
-        circuit.rz(par[9], 9)
-        circuit.rz(par[10], 10)
-        for i in range(L):
-            ind=11+(55+22)*i
-            circuit.rx(par[ind + 0], 0)
-            circuit.rx(par[ind + 1], 1)
-            circuit.rx(par[ind + 2], 2)
-            circuit.rx(par[ind + 3], 3)
-            circuit.rx(par[ind + 4], 4)
-            circuit.rx(par[ind + 5], 5)
-            circuit.rx(par[ind + 6], 6)
-            circuit.rx(par[ind + 7], 7)
-            circuit.rx(par[ind + 8], 8)
-            circuit.rx(par[ind + 9], 9)
-            circuit.rx(par[ind + 10], 10)
 
-            circuit.rz(par[ind + 11], 0)
-            circuit.rz(par[ind + 12], 1)
-            circuit.rz(par[ind + 13], 2)
-            circuit.rz(par[ind + 14], 3)
-            circuit.rz(par[ind + 15], 4)
-            circuit.rz(par[ind + 16], 5)
-            circuit.rz(par[ind + 17], 6)
-            circuit.rz(par[ind + 18], 7)
-            circuit.rz(par[ind + 19], 8)
-            circuit.rz(par[ind + 20], 9)
-            circuit.rz(par[ind + 21], 10)
+        if not hasattr(self, "_rec_unitary_fn"):
+            dev = qml.device("default.qubit", wires=self.n + 2 * self.k)
 
-            for (i,j) in enumerate(itertools.combinations(range(11),2)):
-                circuit.rzz(par[ind + 22+i], j[0], j[1])
+            def _rec_circuit(par):
+                qml.RZ(par[0], wires=0)
+                qml.RZ(par[1], wires=1)
+                qml.RZ(par[2], wires=2)
+                qml.RZ(par[3], wires=3)
+                qml.RZ(par[4], wires=4)
+                qml.RZ(par[5], wires=5)
+                qml.RZ(par[6], wires=6)
+                qml.RZ(par[7], wires=7)
+                qml.RZ(par[8], wires=8)
+                qml.RZ(par[9], wires=9)
+                qml.RZ(par[10], wires=10)
+                for i in range(L):
+                    ind = 11 + (55 + 22) * i
+                    qml.RX(par[ind + 0], wires=0)
+                    qml.RX(par[ind + 1], wires=1)
+                    qml.RX(par[ind + 2], wires=2)
+                    qml.RX(par[ind + 3], wires=3)
+                    qml.RX(par[ind + 4], wires=4)
+                    qml.RX(par[ind + 5], wires=5)
+                    qml.RX(par[ind + 6], wires=6)
+                    qml.RX(par[ind + 7], wires=7)
+                    qml.RX(par[ind + 8], wires=8)
+                    qml.RX(par[ind + 9], wires=9)
+                    qml.RX(par[ind + 10], wires=10)
 
-        ind=11+(55+22)*L
-        circuit.rx(par[ind + 0], 0)
-        circuit.rx(par[ind + 1], 1)
-        circuit.rx(par[ind + 2], 2)
-        circuit.rx(par[ind + 3], 3)
-        circuit.rx(par[ind + 4], 4)
-        circuit.rx(par[ind + 5], 5)
-        circuit.rx(par[ind + 6], 6)
-        circuit.rx(par[ind + 7], 7)
-        circuit.rx(par[ind + 8], 8)
-        circuit.rx(par[ind + 9], 9)
-        circuit.rx(par[ind + 10], 10)
+                    qml.RZ(par[ind + 11], wires=0)
+                    qml.RZ(par[ind + 12], wires=1)
+                    qml.RZ(par[ind + 13], wires=2)
+                    qml.RZ(par[ind + 14], wires=3)
+                    qml.RZ(par[ind + 15], wires=4)
+                    qml.RZ(par[ind + 16], wires=5)
+                    qml.RZ(par[ind + 17], wires=6)
+                    qml.RZ(par[ind + 18], wires=7)
+                    qml.RZ(par[ind + 19], wires=8)
+                    qml.RZ(par[ind + 20], wires=9)
+                    qml.RZ(par[ind + 21], wires=10)
 
-        circuit.rz(par[ind + 11], 0)
-        circuit.rz(par[ind + 12], 1)
-        circuit.rz(par[ind + 13], 2)
-        circuit.rz(par[ind + 14], 3)
-        circuit.rz(par[ind + 15], 4)
-        circuit.rz(par[ind + 16], 5)
-        circuit.rz(par[ind + 17], 6)
-        circuit.rz(par[ind + 18], 7)
-        circuit.rz(par[ind + 19], 8)
-        circuit.rz(par[ind + 20], 9)
-        circuit.rz(par[ind + 21], 10)
+                    for offset, (j, k) in enumerate(itertools.combinations(range(11), 2)):
+                        qml.IsingZZ(par[ind + 22 + offset], wires=[j, k])
 
+                ind = 11 + (55 + 22) * L
+                qml.RX(par[ind + 0], wires=0)
+                qml.RX(par[ind + 1], wires=1)
+                qml.RX(par[ind + 2], wires=2)
+                qml.RX(par[ind + 3], wires=3)
+                qml.RX(par[ind + 4], wires=4)
+                qml.RX(par[ind + 5], wires=5)
+                qml.RX(par[ind + 6], wires=6)
+                qml.RX(par[ind + 7], wires=7)
+                qml.RX(par[ind + 8], wires=8)
+                qml.RX(par[ind + 9], wires=9)
+                qml.RX(par[ind + 10], wires=10)
 
+                qml.RZ(par[ind + 11], wires=0)
+                qml.RZ(par[ind + 12], wires=1)
+                qml.RZ(par[ind + 13], wires=2)
+                qml.RZ(par[ind + 14], wires=3)
+                qml.RZ(par[ind + 15], wires=4)
+                qml.RZ(par[ind + 16], wires=5)
+                qml.RZ(par[ind + 17], wires=6)
+                qml.RZ(par[ind + 18], wires=7)
+                qml.RZ(par[ind + 19], wires=8)
+                qml.RZ(par[ind + 20], wires=9)
+                qml.RZ(par[ind + 21], wires=10)
 
-        unitary=Operator(circuit).data[:,:2**self.n]
-        for i in range(2**(11-self.n)):
-            ind=i
-            ele=unitary[ind*2**self.n:(ind+1)*2**self.n]
+                return qml.state()
+
+            self._decode_qnode = qml.QNode(_rec_circuit, dev, interface="auto", diff_method="backprop")
+            self._rec_unitary_fn = qml.matrix(self._decode_qnode)
+
+        unitary = self._rec_unitary_fn(par)
+        cols = 2 ** self.n
+        unitary = unitary[:, :cols]
+        for i in range(2 ** (11 - self.n)):
+            ele = unitary[i * cols:(i + 1) * cols]
             out.append(ele)
-        self.rec_kraus=out
+        self.rec_kraus = out
+
+    def encode(self,logical_state):
+        if 2**self.k!=len(logical_state):
+            raise ValueError('logical_state length must be 2^k')
+        return np.dot(self.encode_mat.T, logical_state)
+
+    def decode(self,density_matrix):
+        out=np.zeros((2**self.n,2**self.n),dtype=np.complex128)
+        for ele in self.rec_kraus:
+            out+=ele@density_matrix@ele.T.conjugate()
+        return self.base_decode(out)
+
+    def base_decode(self,density_matrix):
+        out=np.zeros((2**self.k,2**self.k),dtype=np.complex128)
+        for ele in self.basecode.rec_kraus:
+            out+=ele@density_matrix@ele.T.conjugate()
+        return out
+
+    def train_set_fidelity(self,density_matrix_set,ave=False):
+        res= [vec_matrix_fidelity(state,density_matrix) for state,density_matrix in zip(self.train_set,density_matrix_set)]
+        if ave:
+            sum = np.tensor([0.0])
+            for ele in res:
+                sum += ele
+            return sum/len(res)
+        else:
+            return res
+
+
