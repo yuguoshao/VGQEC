@@ -1,7 +1,7 @@
 from .envbase import EnvBase
 from qiskit_aer import noise as noise_aer
 import qiskit
-
+import pennylane as qml
 import numpy as np
 from itertools import product
 from functools import reduce
@@ -14,6 +14,9 @@ def amp_damp_single_kraus(lam: float):
                    [0.0, 0.0]], dtype=complex)
     return K0, K1
 
+def vec2mat(vec):
+    # state vector to density matrix
+    return qml.numpy.outer(vec, vec.conj())
 
 class AmplitudeDamping(EnvBase):
     def __init__(self,n,lam=0.1):
@@ -54,7 +57,12 @@ class AmplitudeDamping(EnvBase):
     def evo_mat(self, density_matrix):
         # Independent amplitude damping on n qubits can be applied qubit-by-qubit.
         # This is equivalent to summing over 2^n global Kraus operators but much faster.
-        res = np.asarray(density_matrix, dtype=np.complex128)
+        res = density_matrix
         for L0, L0_dag, L1, L1_dag in self._local_kraus:
             res = L0 @ res @ L0_dag + L1 @ res @ L1_dag
         return res
+
+
+    def evo_vec_set(self,set):
+        density_matrix_set=[vec2mat(vec) for vec in set]
+        return self.evo_density_set(density_matrix_set)
