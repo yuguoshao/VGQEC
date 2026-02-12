@@ -15,7 +15,7 @@ class VGQEC_nine_hybrid(HybridScheme):
         self.n=9
         self.k=1
         self.num_para = 171
-        self.num_para_rec = 11+(55+22)*3 +22
+        self.num_para_rec = 9+(36+18)*3 +18
         self.basecode=SurfaceCode9()
         self.init_gen()
     def update_encode_mat(self):
@@ -244,9 +244,11 @@ class VGQEC_nine_hybrid(HybridScheme):
         L = 3
 
         if not hasattr(self, "_rec_unitary_fn"):
-            dev = qml.device("default.qubit", wires=self.n + 2 * self.k)
+            #dev = qml.device("default.qubit", wires=self.n)
 
             def _rec_circuit(par):
+                #rho_full = rho
+                #qml.QubitDensityMatrix(rho_full, wires=range(self.n))
                 qml.RZ(par[0], wires=0)
                 qml.RZ(par[1], wires=1)
                 qml.RZ(par[2], wires=2)
@@ -256,10 +258,9 @@ class VGQEC_nine_hybrid(HybridScheme):
                 qml.RZ(par[6], wires=6)
                 qml.RZ(par[7], wires=7)
                 qml.RZ(par[8], wires=8)
-                qml.RZ(par[9], wires=9)
-                qml.RZ(par[10], wires=10)
+
                 for i in range(L):
-                    ind = 11 + (55 + 22) * i
+                    ind = 9 + (36 + 18) * i
                     qml.RX(par[ind + 0], wires=0)
                     qml.RX(par[ind + 1], wires=1)
                     qml.RX(par[ind + 2], wires=2)
@@ -269,25 +270,21 @@ class VGQEC_nine_hybrid(HybridScheme):
                     qml.RX(par[ind + 6], wires=6)
                     qml.RX(par[ind + 7], wires=7)
                     qml.RX(par[ind + 8], wires=8)
-                    qml.RX(par[ind + 9], wires=9)
-                    qml.RX(par[ind + 10], wires=10)
 
-                    qml.RZ(par[ind + 11], wires=0)
-                    qml.RZ(par[ind + 12], wires=1)
-                    qml.RZ(par[ind + 13], wires=2)
-                    qml.RZ(par[ind + 14], wires=3)
-                    qml.RZ(par[ind + 15], wires=4)
-                    qml.RZ(par[ind + 16], wires=5)
-                    qml.RZ(par[ind + 17], wires=6)
-                    qml.RZ(par[ind + 18], wires=7)
-                    qml.RZ(par[ind + 19], wires=8)
-                    qml.RZ(par[ind + 20], wires=9)
-                    qml.RZ(par[ind + 21], wires=10)
+                    qml.RZ(par[ind + 9], wires=0)
+                    qml.RZ(par[ind + 10], wires=1)
+                    qml.RZ(par[ind + 11], wires=2)
+                    qml.RZ(par[ind + 12], wires=3)
+                    qml.RZ(par[ind + 13], wires=4)
+                    qml.RZ(par[ind + 14], wires=5)
+                    qml.RZ(par[ind + 15], wires=6)
+                    qml.RZ(par[ind + 16], wires=7)
+                    qml.RZ(par[ind + 17], wires=8)
 
-                    for offset, (j, k) in enumerate(itertools.combinations(range(11), 2)):
-                        qml.IsingZZ(par[ind + 22 + offset], wires=[j, k])
+                    for offset, (j, k) in enumerate(itertools.combinations(range(9), 2)):
+                        qml.IsingZZ(par[ind + 18 + offset], wires=[j, k])
 
-                ind = 11 + (55 + 22) * L
+                ind = 9 + (36 + 18) * L
                 qml.RX(par[ind + 0], wires=0)
                 qml.RX(par[ind + 1], wires=1)
                 qml.RX(par[ind + 2], wires=2)
@@ -297,33 +294,30 @@ class VGQEC_nine_hybrid(HybridScheme):
                 qml.RX(par[ind + 6], wires=6)
                 qml.RX(par[ind + 7], wires=7)
                 qml.RX(par[ind + 8], wires=8)
-                qml.RX(par[ind + 9], wires=9)
-                qml.RX(par[ind + 10], wires=10)
 
-                qml.RZ(par[ind + 11], wires=0)
-                qml.RZ(par[ind + 12], wires=1)
-                qml.RZ(par[ind + 13], wires=2)
-                qml.RZ(par[ind + 14], wires=3)
-                qml.RZ(par[ind + 15], wires=4)
-                qml.RZ(par[ind + 16], wires=5)
-                qml.RZ(par[ind + 17], wires=6)
-                qml.RZ(par[ind + 18], wires=7)
-                qml.RZ(par[ind + 19], wires=8)
-                qml.RZ(par[ind + 20], wires=9)
-                qml.RZ(par[ind + 21], wires=10)
+                qml.RZ(par[ind + 9], wires=0)
+                qml.RZ(par[ind + 10], wires=1)
+                qml.RZ(par[ind + 11], wires=2)
+                qml.RZ(par[ind + 12], wires=3)
+                qml.RZ(par[ind + 13], wires=4)
+                qml.RZ(par[ind + 14], wires=5)
+                qml.RZ(par[ind + 15], wires=6)
+                qml.RZ(par[ind + 16], wires=7)
+                qml.RZ(par[ind + 17], wires=8)
 
-                return qml.state()
 
-            self._decode_qnode = qml.QNode(_rec_circuit, dev, interface="auto", diff_method="backprop")
-            self._rec_unitary_fn = qml.matrix(self._decode_qnode)
+            #self._rec_unitary_fn = qml.QNode(_rec_circuit, dev, interface="auto", diff_method="backprop")
+            #self._decode_qnode = qml.QNode(_rec_circuit, dev, interface="auto", diff_method="backprop")
+            self._rec_unitary_fn = qml.matrix(_rec_circuit, wire_order=range(self.n))
 
         unitary = self._rec_unitary_fn(par)
-        cols = 2 ** self.n
-        unitary = unitary[:, :cols]
-        for i in range(2 ** (11 - self.n)):
-            ele = unitary[i * cols:(i + 1) * cols]
-            out.append(ele)
-        self.rec_kraus = out
+        #cols = 2 ** self.n
+        #unitary = unitary[:, :cols]
+        #for i in range(2 ** (11 - self.n)):
+        #    ele = unitary[i * cols:(i + 1) * cols]
+        #    out.append(ele)
+        #self.rec_kraus = lambda rho : self._rec_unitary_fn(rho, par)
+        self.rec_kraus = [unitary]
 
     def encode(self,logical_state):
         if 2**self.k!=len(logical_state):
